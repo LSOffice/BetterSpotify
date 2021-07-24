@@ -6,6 +6,7 @@ class BetterSpotify(wx.App):
     def __init__(self):
         super().__init__(clearSigInt=True)
         try:
+            os.mkdir("./cache")
             open("./cache/config.txt", "x")
         except FileExistsError:
             pass
