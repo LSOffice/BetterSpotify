@@ -92,7 +92,7 @@ class CredentialsScene(wx.Panel):
             dlg.ShowModal()
             event.Skip()
 
-        token = spotipy.util.prompt_for_user_token(self.textbox1.GetValue(), 'user-read-currently-playing', redirect_uri='http://127.0.0.1:4321/callback')
+        token = spotipy.util.prompt_for_user_token(self.textbox1.GetValue(), scope='user-read-currently-playing', client_id="ab487ce8b7394857b7131f62e83198be", client_secret="0c7bd99559c24d0994271fd2efcfe01a", redirect_uri='http://127.0.0.1:4321/callback')
         if token:
             sp = spotipy.Spotify(auth=token)
 
@@ -126,10 +126,10 @@ class MainScene(wx.Panel):
 
             text1 = wx.StaticText(self, wx.ID_ANY, 'Currently listening to:')
             text1.SetFont(wx.Font(18, wx.DEFAULT, wx.BOLD, wx.NORMAL))
-            holderText1 = wx.StaticText(self, wx.ID_ANY, "htext")
+            holderText1 = wx.StaticText(self, wx.ID_ANY, "")
             holderText1.SetForegroundColour((255, 255, 255))
             png = wx.StaticBitmap(self, -1, wx.Bitmap(f"./cache/{sp.currently_playing()['item']['album']['artists'][0]['name']}_{sp.currently_playing()['item']['name']}.jpg", wx.BITMAP_TYPE_ANY))
-            holderText2 = wx.StaticText(self, wx.ID_ANY, "htext")
+            holderText2 = wx.StaticText(self, wx.ID_ANY, "")
             holderText2.SetFont(wx.Font(6, wx.DEFAULT, wx.BOLD, wx.NORMAL))
             holderText2.SetForegroundColour((255, 255, 255))
             hyperlink = wx.adv.HyperlinkCtrl(self, wx.ID_ANY, sp.currently_playing()['item']['name'],
