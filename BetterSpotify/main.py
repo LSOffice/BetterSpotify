@@ -120,7 +120,7 @@ class MainScene(wx.Panel):
             sizer1 = wx.BoxSizer(wx.HORIZONTAL)
             sizer1.Add(title)
 
-            img_data = requests.get(sp.currently_playing()['item']['album']['images'][0]['url']).content
+            img_data = requests.get(sp.currently_playing()['item']['album']['images'][1]['url']).content
             with open(f"./cache/{sp.currently_playing()['item']['album']['artists'][0]['name']}_{sp.currently_playing()['item']['name']}.jpg", 'wb') as handler:
                 handler.write(img_data)
 
