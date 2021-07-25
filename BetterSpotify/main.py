@@ -95,12 +95,11 @@ class CredentialsScene(wx.Panel):
                                        style=wx.OK)
             dlg.ShowModal()
             event.Skip()
-
         token = spotipy.util.prompt_for_user_token(self.textbox1.GetValue(),
                                                    scope='user-read-currently-playing',
-                                                   client_id=Fernet(open("./cache/DATABASE", "r").readlines()[0]).decrypt(open("./cache/DATABASE", "r").readlines()[1]).decode(),
-                                                   client_secret=Fernet(open("./cache/DATABASE", "r").readlines()[0]).decrypt(open("./cache/DATABASE", "r").readlines()[2]).decode(),
-                                                   redirect_uri=Fernet(open("./cache/DATABASE", "r").readlines()[0]).decrypt(open("./cache/DATABASE", "r").readlines()[3]).decode())
+                                                   client_id=Fernet(open("./cache/DATABASE", "r").readlines()[0].encode()).decrypt(open("./cache/DATABASE", "r").readlines()[1].encode()).decode(),
+                                                   client_secret=Fernet(open("./cache/DATABASE", "r").readlines()[0].encode()).decrypt(open("./cache/DATABASE", "r").readlines()[2].encode()).decode(),
+                                                   redirect_uri=Fernet(open("./cache/DATABASE", "r").readlines()[0].encode()).decrypt(open("./cache/DATABASE", "r").readlines()[3].encode()).decode())
         if token:
             sp = spotipy.Spotify(auth=token)
 
