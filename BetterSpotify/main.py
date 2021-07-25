@@ -1,4 +1,5 @@
 import wx, wx.adv, spotipy, os, requests, json
+from cryptography.fernet import Fernet
 
 # Add Logs
 
@@ -7,6 +8,9 @@ class BetterSpotify(wx.App):
         super().__init__(clearSigInt=True)
         try:
             os.mkdir("./cache")
+        except FileExistsError:
+            pass
+        try:
             open("./cache/config.txt", "x")
         except FileExistsError:
             pass
@@ -92,13 +96,15 @@ class CredentialsScene(wx.Panel):
             dlg.ShowModal()
             event.Skip()
 
-        token = spotipy.util.prompt_for_user_token(self.textbox1.GetValue(), scope='user-read-currently-playing', client_id="ab487ce8b7394857b7131f62e83198be", client_secret="0c7bd99559c24d0994271fd2efcfe01a", redirect_uri='http://127.0.0.1:4321/callback')
+        token = spotipy.util.prompt_for_user_token(self.textbox1.GetValue(),
+                                                   scope='user-read-currently-playing',
+                                                   client_id=Fernet(open("./cache/DATABASE", "r").readlines()[0]).decrypt(open("./cache/DATABASE", "r").readlines()[1]).decode(),
+                                                   client_secret=Fernet(open("./cache/DATABASE", "r").readlines()[0]).decrypt(open("./cache/DATABASE", "r").readlines()[2]).decode(),
+                                                   redirect_uri=Fernet(open("./cache/DATABASE", "r").readlines()[0]).decrypt(open("./cache/DATABASE", "r").readlines()[3]).decode())
         if token:
             sp = spotipy.Spotify(auth=token)
 
-        print(token)
-
-        open("./cache/config.txt", "a").write(self.textbox1.GetValue())
+        open("./cache/config.txt", "a").write("username: " + self.textbox1.GetValue())
         dlg = wx.RichMessageDialog(parent=None,
                                    message="Restart the app!",
                                    caption="Thanks!",
@@ -111,7 +117,7 @@ class MainScene(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent=parent)
         try:
-            self.token = json.load(open(f"./.cache-{open('./cache/config.txt', 'r').read()}", "r+"))['access_token']
+            self.token = json.load(open(f"./.cache-{(open('./cache/config.txt', 'r').readlines()[0]).replace('username: ', '')}", "r+"))['access_token']
             if self.token:
                 sp = spotipy.Spotify(auth=self.token)
 
@@ -161,8 +167,14 @@ class MainScene(wx.Panel):
             self.SetSizer(mainSizer)
             mainSizer.Fit(self)
             self.Layout()
-        except Exception:
-            pass
+        except Exception as e:
+            if isinstance(e, TypeError):
+                print("You have to play a song for the program to work!")
+                exit()
+            elif isinstance(e, IndexError):
+                pass
+            else:
+                raise e
 
 
 if __name__ == '__main__':
